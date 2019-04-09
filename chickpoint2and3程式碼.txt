@@ -1,0 +1,71 @@
+#include "SevSeg.h"
+SevSeg sevseg; //Instantiate a seven segment object
+unsigned long time = millis();
+int hour = 0, Min = 0;
+void setup() {
+
+  Serial.begin(9600);
+  byte numDigits = 4;
+  byte digitPins[] = {2, 3, 4, 5};
+  byte segmentPins[] = {8, 9, 10, 11, 12, 13, 14, 15};
+  sevseg.begin(COMMON_CATHODE, numDigits, digitPins,
+               segmentPins);
+  pinMode(6, INPUT);
+  pinMode(17,INPUT);
+
+}
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  boolean val = digitalRead(6);
+  boolean val1 = digitalRead(17);
+
+sevseg.setNumber(hour * 100 + Min);
+static unsigned long timer = millis();
+if (millis() - timer >= 300)
+{
+  timer += 300;
+  sevseg.setNumber(hour * 100 + Min);
+  
+    if (val)
+    Min=hour=0;
+
+
+    if(val1)
+    {
+      Min = Min -1; 
+      if (Min == -1) 
+      { Min = 59; 
+      
+            if (hour == 0) 
+            hour = 23; 
+            else 
+            hour-- ;
+       } 
+      
+     }
+    else
+    {
+      Min = Min + 1;
+      if (Min == 60)
+      {
+        Min = 0;
+        if (hour == 23)
+        {
+          hour = 0;
+        }
+        else
+          hour++;
+      }
+    
+  }
+}
+
+  
+  sevseg.refreshDisplay();
+}
+  
+ 
+
